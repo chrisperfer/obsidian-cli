@@ -26,13 +26,13 @@ func (c *Client) ListFiles() (*FileList, error) {
 	return &result, nil
 }
 
-// GetVaultInfo retrieves vault information
+// GetVaultInfo retrieves vault information from the root endpoint
 func (c *Client) GetVaultInfo() (*VaultInfo, error) {
 	var result VaultInfo
 	resp, err := c.client.R().
 		SetResult(&result).
 		SetError(&APIError{}).
-		Get("/vault/info")
+		Get("/")
 
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)

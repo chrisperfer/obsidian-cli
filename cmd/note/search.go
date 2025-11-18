@@ -32,6 +32,6 @@ var searchCmd = &cobra.Command{
 		}
 
 		formatter := output.NewFormatter(cmdutil.GetOutputFormat(cobraCmd), cmdutil.GetLLMMode(cobraCmd))
-		return formatter.Print(results.Results)
+		return formatter.Print(results)
 	},
 }
