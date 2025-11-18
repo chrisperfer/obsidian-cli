@@ -35,6 +35,7 @@ func (c *Client) GetPeriodicNote(noteType, date string) (*Note, error) {
 	endpoint := "/periodic/" + noteType
 
 	req := c.client.R().
+		SetHeader("Accept", "application/vnd.olrapi.note+json").
 		SetResult(&result).
 		SetError(&APIError{})
 
