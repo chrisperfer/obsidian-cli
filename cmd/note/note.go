@@ -15,6 +15,8 @@ func init() {
 	NoteCmd.AddCommand(getCmd)
 	NoteCmd.AddCommand(createCmd)
 	NoteCmd.AddCommand(updateCmd)
+	NoteCmd.AddCommand(patchCmd)
+	NoteCmd.AddCommand(appendCmd)
 	NoteCmd.AddCommand(deleteCmd)
 	NoteCmd.AddCommand(searchCmd)
 }

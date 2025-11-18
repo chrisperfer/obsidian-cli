@@ -95,3 +95,33 @@ type SearchResult struct {
 	Matches  []SearchMatch `json:"matches,omitempty"`
 	Score    float64       `json:"score,omitempty"`
 }
+
+// PatchOperation represents the type of patch operation
+type PatchOperation string
+
+const (
+	PatchOperationAppend  PatchOperation = "append"
+	PatchOperationPrepend PatchOperation = "prepend"
+	PatchOperationReplace PatchOperation = "replace"
+)
+
+// PatchTargetType represents the type of target for patch operations
+type PatchTargetType string
+
+const (
+	PatchTargetHeading     PatchTargetType = "heading"
+	PatchTargetBlock       PatchTargetType = "block"
+	PatchTargetFrontmatter PatchTargetType = "frontmatter"
+)
+
+// PatchNoteRequest represents a request to patch a note
+type PatchNoteRequest struct {
+	Path                   string
+	Content                string
+	Operation              PatchOperation
+	TargetType             PatchTargetType
+	Target                 string
+	TargetDelimiter        string // Optional, defaults to "::"
+	TrimTargetWhitespace   bool   // Optional, defaults to false
+	CreateTargetIfMissing  bool   // Optional, for frontmatter fields
+}
