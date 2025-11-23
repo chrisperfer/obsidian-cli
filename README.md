@@ -89,13 +89,63 @@ obsidian-cli config show
 
 ### Vault Operations
 
-#### List All Notes
+**Note**: The Obsidian Local REST API's `/vault/` endpoint only returns top-level items. The CLI works around this limitation by using the search API for recursive operations.
+
+#### List Notes
 ```bash
-# List all notes
+# List top-level items only
 obsidian-cli vault list
+
+# List items in a specific folder
+obsidian-cli vault list "Food and Drink/"
+
+# List all files recursively
+obsidian-cli vault list --recursive
+
+# List all files under a path recursively
+obsidian-cli vault list "Daily/" --recursive
 
 # List in JSON format
 obsidian-cli vault list --output json
+```
+
+#### Find Notes Recursively
+```bash
+# Find all notes in vault
+obsidian-cli vault find
+
+# Find all notes in a folder
+obsidian-cli vault find "Daily/"
+
+# Find with pattern matching
+obsidian-cli vault find --pattern "*.md"
+obsidian-cli vault find --pattern "2025-*.md"
+
+# Combine path and pattern
+obsidian-cli vault find "Daily/" --pattern "2025-11-*.md"
+
+# Find in JSON format
+obsidian-cli vault find --output json
+```
+
+#### Find Recent Notes
+```bash
+# Notes modified in last 3 days (default)
+obsidian-cli vault recent
+
+# Custom time periods
+obsidian-cli vault recent --days 7
+obsidian-cli vault recent --hours 24
+
+# Recent notes in specific path
+obsidian-cli vault recent "Daily/"
+obsidian-cli vault recent "Food and Drink/" --days 30
+
+# Sort by creation time instead of modification time
+obsidian-cli vault recent --sort created
+
+# Output in JSON format
+obsidian-cli vault recent --output json
 ```
 
 #### Get Vault Information
@@ -136,6 +186,36 @@ obsidian-cli note update "Ideas.md" --content "# Updated Ideas"
 
 # Update from stdin
 cat content.md | obsidian-cli note update "Notes.md" --stdin
+```
+
+#### Patch a Note (Targeted Updates)
+```bash
+# Append content under a heading
+obsidian-cli note patch "Notes.md" --target "TODO" --target-type heading --operation append --content "- New task"
+
+# Update a frontmatter field
+obsidian-cli note patch "Document.md" --target "status" --target-type frontmatter --operation replace --content "completed"
+
+# Add value to frontmatter array
+obsidian-cli note patch "Document.md" --target "tags" --array-add "new-tag"
+
+# Remove value from frontmatter array
+obsidian-cli note patch "Document.md" --target "tags" --array-remove "old-tag"
+```
+
+#### Manage Tags
+```bash
+# Add tags to a note
+obsidian-cli note tag add "Document.md" "important" "urgent"
+
+# Remove tags from a note
+obsidian-cli note tag remove "Document.md" "old-tag"
+
+# List all tags on a note
+obsidian-cli note tag list "Document.md"
+
+# List tags in JSON format
+obsidian-cli note tag list "Document.md" --output json
 ```
 
 #### Delete a Note
@@ -298,6 +378,12 @@ Features:
 # Get today's daily note
 obsidian-cli periodic get daily --output json
 
+# Find what you've added recently
+obsidian-cli vault recent --days 3
+
+# Find all daily notes from November 2025
+obsidian-cli vault find "Daily/" --pattern "2025-11-*.md"
+
 # Create a new note from LLM output
 echo "$LLM_OUTPUT" | obsidian-cli note create "AI/Generated.md" --stdin
 
@@ -308,8 +394,13 @@ obsidian-cli note search "TODO" --output json | jq '.[] | .filename'
 ### Batch Operations
 
 ```bash
-# List all notes and process
-obsidian-cli vault list --output json | jq -r '.files[]' | while read note; do
+# Find all markdown notes and process
+obsidian-cli vault find --pattern "*.md" --output json | jq -r '.[]' | while read note; do
+  echo "Processing: $note"
+done
+
+# Process all notes in a specific folder
+obsidian-cli vault find "Daily/" --output json | jq -r '.[]' | while read note; do
   echo "Processing: $note"
 done
 ```

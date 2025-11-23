@@ -47,3 +47,19 @@ func (c *Client) GetVaultInfo() (*VaultInfo, error) {
 
 	return &result, nil
 }
+
+// ListAllFiles retrieves all files recursively using the search API
+func (c *Client) ListAllFiles() ([]string, error) {
+	// Use search with empty query to get all files
+	results, err := c.SearchNotes("")
+	if err != nil {
+		return nil, err
+	}
+
+	files := make([]string, len(results))
+	for i, result := range results {
+		files[i] = result.Filename
+	}
+
+	return files, nil
+}
